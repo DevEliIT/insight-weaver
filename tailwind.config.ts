@@ -57,6 +57,28 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Cores de confiabilidade
+        reliability: {
+          high: "hsl(var(--reliability-high))",
+          "high-foreground": "hsl(var(--reliability-high-foreground))",
+          good: "hsl(var(--reliability-good))",
+          "good-foreground": "hsl(var(--reliability-good-foreground))",
+          moderate: "hsl(var(--reliability-moderate))",
+          "moderate-foreground": "hsl(var(--reliability-moderate-foreground))",
+          low: "hsl(var(--reliability-low))",
+          "low-foreground": "hsl(var(--reliability-low-foreground))",
+        },
+        // Tipos de dados
+        datatype: {
+          primary: "hsl(var(--data-primary))",
+          "primary-foreground": "hsl(var(--data-primary-foreground))",
+          secondary: "hsl(var(--data-secondary))",
+          "secondary-foreground": "hsl(var(--data-secondary-foreground))",
+          estimated: "hsl(var(--data-estimated))",
+          "estimated-foreground": "hsl(var(--data-estimated-foreground))",
+          unavailable: "hsl(var(--data-unavailable))",
+          "unavailable-foreground": "hsl(var(--data-unavailable-foreground))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -65,25 +87,25 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        "pulse-slow": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.5" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "pulse-slow": "pulse-slow 2s ease-in-out infinite",
+      },
+      fontFamily: {
+        sans: ["Inter", "system-ui", "sans-serif"],
       },
     },
   },
