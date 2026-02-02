@@ -1,0 +1,4 @@
+project_id = "rgawzewnkabevmlyjpdx"
+
+[functions.statistics-query]
+verify_jwt = false
