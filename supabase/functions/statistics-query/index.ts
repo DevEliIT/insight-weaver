@@ -20,21 +20,39 @@ REGRAS CRÍTICAS:
    - 40-69: Estimativas com metodologia clara
    - 0-39: Dados escassos ou inconsistentes
 
-3. SEMPRE liste as fontes com:
+3. SEMPRE liste as fontes com DETALHES COMPLETOS:
    - Nome da fonte
    - Tipo (governmental, academic, institutional, private)
    - Data aproximada
-   - Confiabilidade individual
+   - Confiabilidade individual (0-100)
+   - URL quando disponível (use URLs reais e verificáveis)
+   - Descrição: breve explicação do que é a fonte
+   - Metodologia: como a fonte coleta/processa os dados
+   - Abrangência (coverage): geográfica e temporal
+   - Última atualização (lastUpdated): quando os dados foram atualizados
+   - crossValidated: se foi comparada com outras fontes (true/false)
+   - crossValidationSources: lista de outras fontes usadas para validação
 
-4. NUNCA apresente estimativas como fatos absolutos
-5. Se não há dados suficientes, RECUSE e explique o motivo
-6. Sugira 3-5 perguntas relacionadas
+4. VALIDAÇÃO CRUZADA (CRÍTICO):
+   - Compare dados entre múltiplas fontes quando possível
+   - Calcule um índice de consistência (0-100)
+   - Documente discrepâncias encontradas entre fontes
+   - Explique o consenso ou divergência entre as fontes
 
-7. Determine o MELHOR tipo de gráfico:
+5. NUNCA apresente estimativas como fatos absolutos
+6. Se não há dados suficientes, RECUSE e explique o motivo
+7. Sugira 3-5 perguntas relacionadas
+
+8. Determine o MELHOR tipo de gráfico:
    - "pie": Para proporções e distribuições percentuais
    - "bar": Para comparações entre categorias
    - "line": Para evolução temporal
    - "histogram": Para distribuições de frequência
+
+9. INFORMAÇÕES METODOLÓGICAS ADICIONAIS:
+   - dataCollectionMethod: como os dados foram coletados
+   - sampleSize: tamanho da amostra quando aplicável
+   - confidenceInterval: intervalo de confiança quando disponível
 
 FORMATO DE RESPOSTA (JSON):
 {
@@ -43,15 +61,31 @@ FORMATO DE RESPOSTA (JSON):
   "summary": "Resumo claro e objetivo da resposta",
   "methodology": "Explicação do método usado (se estimativa)",
   "limitations": ["Limitação 1", "Limitação 2"],
+  "dataCollectionMethod": "Descrição de como os dados foram coletados",
+  "sampleSize": "Tamanho da amostra (ex: 100.000 domicílios)",
+  "confidenceInterval": "95% de confiança, margem de erro de ±2%",
   "sources": [
     {
       "name": "Nome da Fonte",
       "type": "governmental|academic|institutional|private",
       "date": "2024",
       "reliability": 95,
-      "url": "https://..."
+      "url": "https://...",
+      "description": "Descrição da fonte e sua autoridade",
+      "methodology": "Como a fonte coleta os dados",
+      "coverage": "Nacional, 2020-2024",
+      "lastUpdated": "Janeiro 2024",
+      "crossValidated": true,
+      "crossValidationSources": ["IBGE", "Banco Mundial"]
     }
   ],
+  "crossValidation": {
+    "isValidated": true,
+    "consistencyScore": 92,
+    "sourcesCompared": 3,
+    "discrepancies": ["Diferença de 0.5% entre IBGE e Banco Mundial"],
+    "agreement": "Todas as fontes concordam que o valor está entre X e Y"
+  },
   "charts": [
     {
       "type": "pie|bar|line|histogram",
@@ -117,7 +151,7 @@ serve(async (req) => {
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: `Pergunta estatística: ${question}` },
+          { role: "user", content: `Pergunta estatística: ${question}\n\nIMPORTANTE: Forneça informações detalhadas sobre as fontes, incluindo URLs reais quando possível, metodologia de coleta, e realize validação cruzada entre múltiplas fontes.` },
         ],
         temperature: 0.3,
         response_format: { type: "json_object" },
@@ -173,6 +207,8 @@ serve(async (req) => {
     parsedContent.question = question;
 
     console.log("Successfully processed question with classification:", parsedContent.classification);
+    console.log("Sources count:", parsedContent.sources?.length || 0);
+    console.log("Cross-validation:", parsedContent.crossValidation?.isValidated ? "Yes" : "No");
 
     return new Response(
       JSON.stringify(parsedContent),
