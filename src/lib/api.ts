@@ -1,7 +1,15 @@
 import { supabase } from '@/integrations/supabase/client';
 import { StatisticalResponse } from '@/types/statistics';
+import { getCachedResponse, cacheResponse } from '@/lib/sourceCache';
 
 export async function queryStatistics(question: string): Promise<StatisticalResponse> {
+  // Check cache first
+  const cachedResult = getCachedResponse(question);
+  if (cachedResult) {
+    console.log('Returning cached response for:', question);
+    return cachedResult;
+  }
+
   const { data, error } = await supabase.functions.invoke('statistics-query', {
     body: { question },
   });
@@ -15,5 +23,10 @@ export async function queryStatistics(question: string): Promise<StatisticalResp
     throw new Error(data.error);
   }
 
-  return data as StatisticalResponse;
+  const response = data as StatisticalResponse;
+
+  // Cache the response
+  cacheResponse(question, response);
+
+  return response;
 }

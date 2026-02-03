@@ -16,6 +16,20 @@ export interface Source {
   type: 'governmental' | 'academic' | 'institutional' | 'private';
   date: string;
   reliability: number; // 0-100
+  description?: string; // Descrição da fonte
+  methodology?: string; // Metodologia usada pela fonte
+  coverage?: string; // Abrangência geográfica/temporal
+  lastUpdated?: string; // Última atualização dos dados
+  crossValidated?: boolean; // Se foi validada com outras fontes
+  crossValidationSources?: string[]; // Fontes usadas para validação cruzada
+}
+
+export interface CrossValidation {
+  isValidated: boolean;
+  consistencyScore: number; // 0-100
+  sourcesCompared: number;
+  discrepancies?: string[];
+  agreement?: string;
 }
 
 export interface ChartData {
@@ -44,6 +58,10 @@ export interface StatisticalResponse {
     value: string | number;
     unit?: string;
   }>;
+  crossValidation?: CrossValidation;
+  dataCollectionMethod?: string;
+  sampleSize?: string;
+  confidenceInterval?: string;
 }
 
 export interface QueryHistoryItem {
@@ -52,6 +70,13 @@ export interface QueryHistoryItem {
   timestamp: number;
   classification: DataClassification;
   reliabilityScore: number;
+}
+
+export interface CachedQuery {
+  question: string;
+  response: StatisticalResponse;
+  cachedAt: number;
+  expiresAt: number;
 }
 
 export const CLASSIFICATION_LABELS: Record<DataClassification, string> = {
