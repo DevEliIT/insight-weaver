@@ -80,17 +80,17 @@ const Index = () => {
       <main className="container py-12">
         {/* Hero Section */}
         <section className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
+          {/* <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
             <BarChart3 className="h-4 w-4" />
             Inteligência Artificial para Estatísticas
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+          </div> */}
+          {/* <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
             Pergunte qualquer coisa sobre{' '}
             <span className="text-primary">estatísticas</span>
           </h1>
           <p className="text-lg text-muted-foreground mb-8">
             Transformamos perguntas em respostas estatísticas confiáveis, com classificação de dados, índice de confiabilidade e fontes rastreáveis.
-          </p>
+          </p> */}
           
           <SearchBar 
             onSearch={handleSearch} 
@@ -128,7 +128,7 @@ const Index = () => {
       </main>
 
       {/* Footer */}
-      <footer className="border-t py-8 mt-16">
+      {/* <footer className="border-t py-8 mt-16">
         <div className="container text-center text-sm text-muted-foreground">
           <p>
             <strong>StatIA</strong> prioriza transparência e rigor estatístico.
@@ -137,7 +137,7 @@ const Index = () => {
             Todas as respostas incluem classificação de dados, índice de confiabilidade e fontes rastreáveis.
           </p>
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 };
