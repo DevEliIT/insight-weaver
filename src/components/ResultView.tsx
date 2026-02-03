@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { ArrowLeft, Download, FileText, AlertTriangle, Info } from 'lucide-react';
+import { ArrowLeft, Download, FileText, AlertTriangle, Info, FlaskConical, Users, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -11,6 +11,7 @@ import { ReliabilityProgress } from '@/components/ReliabilityProgress';
 import { SourcesList } from '@/components/SourcesList';
 import { StatisticsChart } from '@/components/StatisticsChart';
 import { RelatedQuestions } from '@/components/RelatedQuestions';
+import { CrossValidationCard } from '@/components/CrossValidationCard';
 import { exportToPDF } from '@/lib/pdf';
 import { useToast } from '@/hooks/use-toast';
 
@@ -139,6 +140,60 @@ export function ResultView({ result, onBack, onNewQuery }: ResultViewProps) {
               )}
             </CardContent>
           </Card>
+
+          {/* Additional Methodology Info */}
+          {(result.dataCollectionMethod || result.sampleSize || result.confidenceInterval) && (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <FlaskConical className="h-5 w-5 text-primary" />
+                  Detalhes Metodológicos
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4 md:grid-cols-3">
+                  {result.dataCollectionMethod && (
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium flex items-center gap-2">
+                        <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                        Coleta de Dados
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {result.dataCollectionMethod}
+                      </p>
+                    </div>
+                  )}
+                  {result.sampleSize && (
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium flex items-center gap-2">
+                        <Users className="h-4 w-4 text-muted-foreground" />
+                        Tamanho da Amostra
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {result.sampleSize}
+                      </p>
+                    </div>
+                  )}
+                  {result.confidenceInterval && (
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium flex items-center gap-2">
+                        <Info className="h-4 w-4 text-muted-foreground" />
+                        Intervalo de Confiança
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {result.confidenceInterval}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Cross Validation */}
+          {result.crossValidation && result.crossValidation.isValidated && (
+            <CrossValidationCard validation={result.crossValidation} />
+          )}
 
           {/* Raw Data */}
           {result.rawData && result.rawData.length > 0 && (
