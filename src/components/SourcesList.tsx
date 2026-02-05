@@ -12,7 +12,8 @@ import {
   Calendar,
   MapPin,
   FileText,
-  Link2
+   Link2,
+   AlertTriangle
 } from 'lucide-react';
 import { Source } from '@/types/statistics';
 import { Card } from '@/components/ui/card';
@@ -45,6 +46,81 @@ const sourceTypeColors = {
   institutional: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
   private: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
 };
+
+// Known real domains for statistical sources
+const KNOWN_VALID_DOMAINS = [
+  'ibge.gov.br',
+  'datasus.gov.br',
+  'gov.br',
+  'who.int',
+  'worldbank.org',
+  'un.org',
+  'oecd.org',
+  'imf.org',
+  'unicef.org',
+  'paho.org',
+  'scielo.br',
+  'pubmed.ncbi.nlm.nih.gov',
+  'nature.com',
+  'thelancet.com',
+  'bmj.com',
+  'jamanetwork.com',
+  'cdc.gov',
+  'nih.gov',
+  'europa.eu',
+  'ipea.gov.br',
+  'fgv.br',
+  'usp.br',
+  'unicamp.br',
+  'ufrj.br',
+];
+
+function isLikelyValidUrl(url: string | undefined): { valid: boolean; reason?: string } {
+  if (!url) return { valid: false, reason: 'URL não fornecida' };
+  
+  try {
+    const parsed = new URL(url);
+    
+    // Check if it's a known valid domain
+    const isKnownDomain = KNOWN_VALID_DOMAINS.some(domain => 
+      parsed.hostname.endsWith(domain) || parsed.hostname === domain
+    );
+    
+    if (isKnownDomain) {
+      return { valid: true };
+    }
+    
+    // Check for suspicious patterns that indicate AI-generated fake URLs
+    const suspiciousPatterns = [
+      /example\.com/i,
+      /placeholder/i,
+      /fake/i,
+      /test\.com/i,
+      /sample/i,
+      /lorem/i,
+      /dummy/i,
+    ];
+    
+    const isSuspicious = suspiciousPatterns.some(pattern => pattern.test(url));
+    if (isSuspicious) {
+      return { valid: false, reason: 'URL parece ser um placeholder' };
+    }
+    
+    // Check if it has a reasonable structure
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      return { valid: false, reason: 'Protocolo inválido' };
+    }
+    
+    // URLs with very generic paths might be fake
+    if (parsed.pathname === '/' && !isKnownDomain) {
+      return { valid: false, reason: 'URL pode não ser verificável' };
+    }
+    
+    return { valid: true, reason: 'URL não verificada - use com cautela' };
+  } catch {
+    return { valid: false, reason: 'URL inválida' };
+  }
+}
 
 function getReliabilityColor(reliability: number): string {
   if (reliability >= 90) return 'text-green-600 dark:text-green-400';
@@ -174,18 +250,49 @@ export function SourcesList({ sources }: SourcesListProps) {
 
                   {/* Actions */}
                   <div className="flex flex-col items-end gap-2">
-                    {source.url && (
-                      <a
-                        href={source.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 text-sm text-primary hover:underline font-medium"
-                      >
-                        <Link2 className="h-4 w-4" />
-                        Acessar fonte
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
-                    )}
+                     {source.url && (() => {
+                       const urlCheck = isLikelyValidUrl(source.url);
+                       if (urlCheck.valid && !urlCheck.reason?.includes('cautela')) {
+                         return (
+                           <a
+                             href={source.url}
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             className="flex items-center gap-1.5 text-sm text-primary hover:underline font-medium"
+                           >
+                             <Link2 className="h-4 w-4" />
+                             Acessar fonte
+                             <ExternalLink className="h-3 w-3" />
+                           </a>
+                         );
+                       } else if (urlCheck.valid) {
+                         return (
+                           <div className="flex flex-col items-end gap-1">
+                             <a
+                               href={source.url}
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               className="flex items-center gap-1.5 text-sm text-muted-foreground hover:underline"
+                             >
+                               <Link2 className="h-4 w-4" />
+                               Acessar fonte
+                               <ExternalLink className="h-3 w-3" />
+                             </a>
+                             <span className="text-xs text-yellow-600 dark:text-yellow-400 flex items-center gap-1">
+                               <AlertTriangle className="h-3 w-3" />
+                               Não verificado
+                             </span>
+                           </div>
+                         );
+                       } else {
+                         return (
+                           <span className="text-xs text-muted-foreground flex items-center gap-1">
+                             <AlertCircle className="h-3 w-3" />
+                             Link indisponível
+                           </span>
+                         );
+                       }
+                     })()}
                     {hasDetails && (
                       <CollapsibleTrigger asChild>
                         <Button variant="ghost" size="sm" className="gap-1 text-xs">
